@@ -1,12 +1,16 @@
 import random
 from particle import Particle
+from field_model import FieldModel
+import math
 
 class ParticleFilter:
-    def __init__(self, num_particles, box_size):
+    def __init__(self, num_particles, box_size, robot_loc):
         self.num_particles = num_particles
         self.particles = []
         self.box_size = box_size
         self.initialize_particles()
+        self.field_model = FieldModel()
+        self.robot_location = robot_loc
 
     def initialize_particles(self):
         """Initialize particles around the initial state"""
@@ -36,13 +40,29 @@ class ParticleFilter:
             y = max(0, min(y, self.box_size[1]))
             particle.set_state((x, y, theta))
 
-    def correct(self, measurement):
+    def confidence(self, particle):
         """Correct the particles based on the measurement"""
-        # Placeholder for correction logic
-        # In a real implementation, you would use the measurement to update particle weights
+        predicted = self.field_model.get_distance_to_obstacle(particle)
+        robot_particle = Particle(self.robot_location, 1.0)
+        actual = self.field_model.get_distance_to_obstacle(robot_particle)
+
+        return (1.0 / math.sqrt(predicted-actual))
+    
+    def reweight(self):
+        highest_weight = None
+        total_weight = 0
+
         for particle in self.particles:
-            weight = random.uniform(0, 1)
-            particle.set_weight(weight)
+            weight = 0.0
+            weight_modifier = 0.0
+
+            weight += self.confidence(particle)
+            weight_modifier += 1.0
+
+            particle.set_weight(weight / weight_modifier)
+            total_weight += particle.get_weight()
+
+        
 
     def resample(self):
         """Resample particles based on their weights"""
@@ -68,3 +88,6 @@ class ParticleFilter:
 
         num_particles = len(self.particles)
         return (x_sum / num_particles, y_sum / num_particles, theta_sum / num_particles)
+    
+    def set_robot_location(self, robot_loc):
+        self.robot_location = robot_loc

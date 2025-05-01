@@ -26,7 +26,7 @@ class ParticleVisualizer(QMainWindow):
         )
         
         # Initialize particle filter
-        self.particle_filter = ParticleFilter(num_particles, box_size_inches)
+        self.particle_filter = ParticleFilter(num_particles, box_size_inches, list(initial_state))
         
         # Setup UI
         self.init_ui()
@@ -122,13 +122,20 @@ class ParticleVisualizer(QMainWindow):
         
         # Update the robot position
         self.robot_pos_inches = (new_x_inches, new_y_inches)
+
+        self.particle_filter.set_robot_location([self.robot_pos_inches[0], self.robot_pos_inches[1], 0])
         
         # Update the particle filter
         self.particle_filter.update((dx, dy, 0))
+
+        self.particle_filter.reweight()
+
+        self.particle_filter.resample()
 
         # Calcualate measurement for correction
         # 
         
         # Request a redraw
         self.vis_widget.update()
+
         
