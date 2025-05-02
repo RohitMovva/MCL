@@ -28,21 +28,23 @@ class ParticleVisualizer(QMainWindow):
         # Initialize particle filter
         self.particle_filter = ParticleFilter(num_particles, box_size_inches, list(initial_state))
         
-        # Setup UI
-        self.init_ui()
-        
         # Variables for dragging
         self.dragging = False
         self.drag_start_pos = None
         self.robot_pos_inches = initial_state[:2]  # (x, y) in inches
+        print("yellow")
         self.robot_theta = initial_state[2]  # theta in radians
         
         # Set update timer
         self.setMouseTracking(True)
+
+        # Setup UI
+        self.init_ui()
     
     def init_ui(self):
         """Initialize the user interface"""
         self.setWindowTitle("Particle Filter Visualization")
+
         
         # Set fixed size based on box dimensions
         margin = 50  # Extra space around the box
