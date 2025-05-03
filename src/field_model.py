@@ -13,24 +13,20 @@ class FieldModel:
         min_length = None
 
         for line in self.line_points:
-            print("Start")
             p3 = line[0]
             p4 = line[1]
-            # print(p1, p2)
-            # print(p3, p4)
 
-            # print((p1[0] - p2[0]) * (p3[1] - p4[1]))
-            # print((p1[1] - p2[1]) * (p3[0] - p4[0]))
 
-            if ((p1[0] - p2[0]) * (p3[1] - p4[1]) - (p1[1] - p2[1]) * (p3[0] - p4[0])) == 0:
+            if ((p1[0] - p2[0]) * (p3[1] - p4[1]) - (p1[1] - p2[1]) * (p3[0] - p4[0])) == 0: # Parallel lines no intersection
                 continue
+
             t = ((p1[0] - p3[0]) * (p3[1] - p4[1]) - (p1[1] - p3[1]) * (p3[0] - p4[0])) / ((p1[0] - p2[0]) * (p3[1] - p4[1]) - (p1[1] - p2[1]) * (p3[0] - p4[0]))
+
             u = -1*((p1[0] - p2[0]) * (p1[1] - p3[1]) - (p1[1] - p2[1]) * (p1[0] - p3[0])) / ((p1[0] - p2[0]) * (p3[1] - p4[1]) - (p1[1] - p2[1]) * (p3[0] - p4[0]))
-            print(f"t: {t}")
-            print(f"u: {u}")
+
             if (t >= 0 and 0 <= u and u <= 1):
                 if (min_length is None or min_length > t):
                     min_length = t
-            print()
+
         return min_length
     

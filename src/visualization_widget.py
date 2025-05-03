@@ -68,7 +68,6 @@ class VisualizationWidget(QWidget):
             painter.drawLine(int(px), int(py), int(px + dx), int(py + dy))
         
         # Draw robot (current state)
-        # print(type(self.parent))
         x, y = self.particle_visualizer.robot_pos_inches
         theta = self.particle_visualizer.robot_theta
         
