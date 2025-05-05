@@ -98,7 +98,7 @@ class ParticleFilter:
         actual = self.field_model.get_distance_to_obstacle(robot_particle)
 
 
-        sigma = 3.5  # Sensor noise parameter (adjust as needed)
+        sigma = 5.0  # Sensor noise parameter (adjust as needed)
         diff = predicted - actual
         # if (particle.get_state()[0] < 80 and particle.get_state()[0] > 70 and particle.get_state()[1] < 80 and particle.get_state()[1] > 70):
         # if (particle.get_weight() > 0.1):
