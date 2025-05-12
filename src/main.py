@@ -5,7 +5,7 @@ from particle_visualizer import ParticleVisualizer
 def main():
     app = QApplication(sys.argv)
     # Create visualizer with a 12x12 inch box
-    visualizer = ParticleVisualizer((144, 144), num_particles=100)
+    visualizer = ParticleVisualizer((144, 144))
     sys.exit(app.exec())
 
 

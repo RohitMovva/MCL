@@ -4,7 +4,7 @@ from particle_filter import ParticleFilter
 from visualization_widget import VisualizationWidget
 
 class ParticleVisualizer(QMainWindow):
-    def __init__(self, box_size_inches, num_particles=100, initial_state=(72, 72, 0)):
+    def __init__(self, box_size_inches, num_particles=500, initial_state=(72, 72, 0)):
         """
         Initialize the particle filter visualizer
         
@@ -44,7 +44,7 @@ class ParticleVisualizer(QMainWindow):
 
         self.timer = QTimer(self)
         self.timer.timeout.connect(self.update_filter)
-        self.timer.start(20)  # 20 milliseconds = 50 fps
+        self.timer.start(100)  # 20 milliseconds = 50 fps
     
     def init_ui(self):
         """Initialize the user interface"""
@@ -102,7 +102,7 @@ class ParticleVisualizer(QMainWindow):
         particle_label = QLabel("Number of Particles:")
         self.particle_slider = QSlider(Qt.Orientation.Horizontal)
         self.particle_slider.setMinimum(10)
-        self.particle_slider.setMaximum(500)
+        self.particle_slider.setMaximum(2500)
         self.particle_slider.setValue(100)
         self.particle_slider.setTickPosition(QSlider.TickPosition.TicksBelow)
         self.particle_slider.setTickInterval(50)

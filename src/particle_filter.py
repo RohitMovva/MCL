@@ -49,7 +49,8 @@ class ParticleFilter:
 
             # Ensure the particle stays within bounds
             x = max(0, min(x, self.box_size[0]))
-            y = max(0, min(y, self.box_size[1]))
+            y = max(0, min(y,
+             self.box_size[1]))
             
             # Normalize theta to be between -π and π
             while theta > math.pi:
@@ -98,7 +99,7 @@ class ParticleFilter:
         actual = self.field_model.get_distance_to_obstacle(robot_particle)
 
 
-        sigma = 5.0  # Sensor noise parameter (adjust as needed)
+        sigma = 7.0  # Sensor noise parameter (adjust as needed)
         diff = predicted - actual
         # if (particle.get_state()[0] < 80 and particle.get_state()[0] > 70 and particle.get_state()[1] < 80 and particle.get_state()[1] > 70):
         # if (particle.get_weight() > 0.1):
