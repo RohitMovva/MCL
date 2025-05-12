@@ -115,12 +115,6 @@ class ParticleVisualizer(QMainWindow):
         
         controls_layout.addLayout(first_row)
         
-        # You can add more rows of controls here
-        # Example:
-        # second_row = QHBoxLayout()
-        # ... add widgets to second_row ...
-        # controls_layout.addLayout(second_row)
-        
         main_layout.addWidget(controls_container)
         
         # Calculate a sensible initial size for the window

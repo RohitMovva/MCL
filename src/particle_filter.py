@@ -16,7 +16,7 @@ class ParticleFilter:
 
     def initialize_particles(self):
         """Initialize particles around the initial state"""
-        # Uniform distribution within the box size
+        # Uniform distribution!!!
         for _ in range(self.num_particles):
             x = random.uniform(0, self.box_size[0])
             y = random.uniform(0, self.box_size[1])
@@ -33,11 +33,10 @@ class ParticleFilter:
         """Update the particles based on the new state with noise proportional to movement"""
         for particle in self.particles:
             # Calculate noise proportional to movement magnitude
-            dx_noise = abs(delta_state[0]) * self.noise  # 10% noise
+            dx_noise = abs(delta_state[0]) * self.noise
             dy_noise = abs(delta_state[1]) * self.noise
             dtheta_noise = abs(delta_state[2]) * self.noise
             
-            # Minimum noise to maintain diversity
             dx_noise = max(dx_noise, self.noise)
             dy_noise = max(dy_noise, self.noise)
             dtheta_noise = max(dtheta_noise, 0.001)
@@ -67,6 +66,7 @@ class ParticleFilter:
         """Correct the particles based on the measurement"""
         robot_particle = Particle(self.robot_location, 1.0)
         mock_particle = Particle(particle.get_state(), 1.0)
+
         # Offset states by sensor offset
         mock_particle.set_state([
             mock_particle.get_state()[0] + sensor_offset[0],
@@ -80,35 +80,13 @@ class ParticleFilter:
             robot_particle.get_state()[2] + sensor_offset[2]
         ])
 
-        # while (mock_particle.get_state()[2] > math.pi):
-        #     mock_particle.set_state([
-        #         mock_particle.get_state()[0],
-        #         mock_particle.get_state()[1],
-        #         mock_particle.get_state()[2] - 2 * math.pi
-        #     ])
-
-        # while (robot_particle.get_state()[2] > math.pi):
-        #     robot_particle.set_state([
-        #         robot_particle.get_state()[0],
-        #         robot_particle.get_state()[1],
-        #         robot_particle.get_state()[2] - 2 * math.pi
-        #     ])
-
         predicted = self.field_model.get_distance_to_obstacle(mock_particle)
         
         actual = self.field_model.get_distance_to_obstacle(robot_particle)
 
 
-        sigma = 7.0  # Sensor noise parameter (adjust as needed)
+        sigma = 7.0  # Goofy sigma
         diff = predicted - actual
-        # if (particle.get_state()[0] < 80 and particle.get_state()[0] > 70 and particle.get_state()[1] < 80 and particle.get_state()[1] > 70):
-        # if (particle.get_weight() > 0.1):
-        #     print(f"Actual: {actual}")
-        #     print(f"Predicted: {predicted}")
-        #     print(f"Particle state: {particle.get_state()}")
-        #     print(f"Particle weight: {particle.get_weight()}")
-        #     print(f"Confidence: {math.exp(-(diff * diff) / (2 * sigma * sigma))}")
-        #     print()
 
         return math.exp(-(diff * diff) / (2 * sigma * sigma))
         
@@ -117,10 +95,9 @@ class ParticleFilter:
             weight = 0.0
             
             for i in range(4):
-                # 4 sensor setup, each side of the robot
+                # 4 dist sensors
                 sensor_offset = [0, 0, i * math.pi / 2]
                 
-                # Multiply weights instead of adding them (assuming independence)
                 sensor_weight = self.confidence(particle, sensor_offset)
 
 
@@ -129,32 +106,16 @@ class ParticleFilter:
                 else:
                     weight *= sensor_weight
 
-                
-            # if (particle.get_weight() > 0.1):
-            #         print()
-            #         print()
             particle.set_weight(weight)
 
-            # if (particle.get_state()[0] < 80 and particle.get_state()[0] > 70 and particle.get_state()[1] < 80 and particle.get_state()[1] > 70):
-                # print("Close Particle")
-            # if (particle.get_weight() > 0.1):
-            #     print(f"Particle state: {particle.get_state()}")
-            #     print(f"Particle weight: {particle.get_weight()}")
-            #     print(f"Particle weight: {weight}")
-            #     print()
-            #     print()
         
         # Normalize weights to prevent numerical issues
         total_weight = sum(p.get_weight() for p in self.particles)
         if total_weight > 0:
             for particle in self.particles:
                 particle.set_weight(particle.get_weight() / total_weight)
-                # if (particle.get_weight() > 1e-9):
-                    # print(f"Particle state: {particle.get_state()}")
-                    # print(f"Particle weight: {particle.get_weight()}")
-                # print(f"Particle weight: {particle.get_weight()}")
-        else:
-            # If all weights are zero, reset to uniform
+
+        else: # uh oh
             for particle in self.particles:
                 particle.set_weight(1.0 / len(self.particles))
         
@@ -163,12 +124,12 @@ class ParticleFilter:
         """Resample particles with low variance sampler to prevent particle depletion"""
         weights = [particle.get_weight() for particle in self.particles]
         
-        # Check if we need to resample (effective sample size)
         sum_weights_squared = sum(w*w for w in weights)
         neff = 1.0 / sum_weights_squared
+
+        # Disabled selective resampling, always resample rn, works well
         
-        # Only resample if effective sample size is too low
-        if neff < self.num_particles * 1.0:  # Threshold is a tuning parameter
+        if neff < self.num_particles * 1.0:  # set threshold to less than 1.0 for selecitive resampling
             new_particles = []
             
             # Low variance resampler
@@ -182,17 +143,17 @@ class ParticleFilter:
                     i += 1
                     c += weights[i]
                 
-                # Add some small random noise to avoid particle depletion
+                # noiseee
                 x, y, theta = self.particles[i].get_state()
-                x += random.gauss(0, 0.05)  # small position noise
+                x += random.gauss(0, 0.05)
                 y += random.gauss(0, 0.05)
-                theta += random.gauss(0, 0.01)  # small angle noise
-                
+                theta += random.gauss(0, 0.01)
+
                 new_particles.append(Particle([x, y, theta], 1.0 / self.num_particles))
             
             self.particles = new_particles
         else:
-            # Just normalize weights without resampling
+
             for particle in self.particles:
                 particle.set_weight(particle.get_weight() / sum(weights))
 

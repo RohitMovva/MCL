@@ -99,10 +99,6 @@ class VisualizationWidget(QWidget):
             x = event.position().x() - margin_x
             y = event.position().y() - margin_y
             
-            # Convert to inches
-            x_inches = x / self.particle_visualizer.pixels_per_inch
-            y_inches = y / self.particle_visualizer.pixels_per_inch
-            
             # Check if click is near the robot
             robot_x, robot_y = self.particle_visualizer.robot_pos_inches
             robot_px = robot_x * self.particle_visualizer.pixels_per_inch
